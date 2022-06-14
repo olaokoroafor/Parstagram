@@ -38,8 +38,6 @@ public class LoginActivity extends AppCompatActivity {
                 loginUser(username, password);
             }
         });
-
-        loginUser("ola", "ola"); // for dev
     }
 
     private void loginUser(String username, String password) {
