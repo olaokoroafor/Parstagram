@@ -37,7 +37,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:clickable="true"/>
 
-    <TextView
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/tvPlaceholder"
         android:layout_width="413dp"
         android:layout_height="542dp"
