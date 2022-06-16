@@ -3,16 +3,23 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../layout/custom_preview.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/compose_btn.xml" value="0.2235" />
+        <entry key="app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_to_photos_24.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/ic_baseline_crop_square_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_baseline_photo_camera_24.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/profile_btn.xml" value="0.2235" />
         <entry key="app/src/main/res/drawable/timeline_btn.xml" value="0.224" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.25707797727723053" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.19630192502532928" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.31752929687500003" />
+        <entry key="app/src/main/res/layout/activity_post_detail.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_compose.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.18036499023437502" />
         <entry key="app/src/main/res/layout/fragment_timeline.xml" value="0.10612968591691996" />
+        <entry key="app/src/main/res/layout/grid_post.xml" value="0.13855116514690982" />
+        <entry key="app/src/main/res/layout/item_post.xml" value="0.1" />
         <entry key="app/src/main/res/menu/menu_bottom_navigatiion.xml" value="0.1" />
         <entry key="app/src/main/res/xml/fileprovider.xml" value="0.2171875" />
       </map>

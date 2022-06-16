@@ -2,6 +2,7 @@ package com.example.parstagram;
 
 import android.app.Application;
 
+import com.example.parstagram.models.Comment;
 import com.example.parstagram.models.Post;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -16,6 +17,7 @@ public class ParseApplication extends Application {
         super.onCreate();
         Parse.setLogLevel(Parse.LOG_LEVEL_DEBUG);
         ParseObject.registerSubclass(Post.class);
+        ParseObject.registerSubclass(Comment.class);
 
         // Use for monitoring Parse OkHttp traffic
         // Can be Level.BASIC, Level.HEADERS, or Level.BODY
