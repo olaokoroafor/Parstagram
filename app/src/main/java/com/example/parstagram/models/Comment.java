@@ -1,71 +1,39 @@
 package com.example.parstagram.models;
 
 import com.parse.ParseClassName;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
-
-import org.json.JSONArray;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-@ParseClassName("Post")
-public class Post extends ParseObject {
-    public static final String DESCRIPTION_KEY = "description";
-    public static final String IMAGE_KEY = "image";
+@ParseClassName("Comment")
+public class Comment extends ParseObject {
+    public static final String POST_KEY = "post";
+    public static final String BODY_KEY = "body";
     public static final String USER_KEY = "user";
-    public static final String LIKES_KEY = "likes";
-    public static final String COMMENTS_KEY = "comments";
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
 
-    public String getDescription(){
-        return getString(DESCRIPTION_KEY);
+    public Post getPost(){
+        return (Post) getParseObject(this.POST_KEY);
     }
 
-    public void setDescription(String description){
-        put(DESCRIPTION_KEY, description);
+    public void setPost(String body, Post post, ParseUser user){
+        put(POST_KEY, post.getObjectId());
+        put(BODY_KEY, body);
+        put(USER_KEY, user.getObjectId());
     }
 
-    public JSONArray getLikes(){
-        return getJSONArray(LIKES_KEY);
+    public String getBody(){
+        return getString(POST_KEY);
     }
 
-    public void setLikes(ParseUser user){
-        JSONArray likesArray = this.getLikes();
-        likesArray.put(user);
-        put(LIKES_KEY, likesArray);
-    }
-
-    public void setLikes(){
-        JSONArray array = new JSONArray();
-        put(LIKES_KEY, array);
-    }
-
-    public JSONArray getComments(){
-        return getJSONArray(COMMENTS_KEY);
-    }
-
-    public void setComment(Comment comment){
-        JSONArray array = getComments();
-        array.put(comment);
-        put(COMMENTS_KEY, comment);
-    }
-
-    public void setComment(){
-        JSONArray array = new JSONArray();
-        put(COMMENTS_KEY, array);
-    }
-    public ParseFile getImage(){
-        return getParseFile(IMAGE_KEY);
-    }
-
-    public void setImage(ParseFile image){
-        put(IMAGE_KEY, image);
+    public void setBody(String body){
+        put(BODY_KEY, body);
     }
 
     public ParseUser getUser(){
