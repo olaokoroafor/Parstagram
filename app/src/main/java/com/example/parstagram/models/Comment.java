@@ -22,14 +22,12 @@ public class Comment extends ParseObject {
         return (Post) getParseObject(this.POST_KEY);
     }
 
-    public void setPost(String body, Post post, ParseUser user){
-        put(POST_KEY, post.getObjectId());
-        put(BODY_KEY, body);
-        put(USER_KEY, user.getObjectId());
+    public void setPost(Post post){
+        put(POST_KEY, post);
     }
 
     public String getBody(){
-        return getString(POST_KEY);
+        return getString(BODY_KEY);
     }
 
     public void setBody(String body){

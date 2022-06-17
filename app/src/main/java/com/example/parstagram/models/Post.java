@@ -9,6 +9,7 @@ import org.json.JSONArray;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 @ParseClassName("Post")
@@ -31,13 +32,18 @@ public class Post extends ParseObject {
         put(DESCRIPTION_KEY, description);
     }
 
-    public JSONArray getLikes(){
-        return getJSONArray(LIKES_KEY);
+    public List<String> getLikes(){
+        return getList(LIKES_KEY);
     }
 
-    public void setLikes(ParseUser user){
-        JSONArray likesArray = this.getLikes();
-        likesArray.put(user);
+    public void setLikes(ParseUser user, boolean like){
+        List<String> likesArray = this.getLikes();
+        if (like){
+            likesArray.add(user.getObjectId());
+        }
+        else{
+            likesArray.remove(user.getObjectId());
+        }
         put(LIKES_KEY, likesArray);
     }
 
