@@ -54,6 +54,7 @@ public class ProfileFragment extends Fragment {
     private ImageView ivPfp;
     private ImageView ivAddPfp;
     private TextView tvUsername;
+    private ParseUser currentUser;
 
 
     public ProfileFragment() {
@@ -68,33 +69,38 @@ public class ProfileFragment extends Fragment {
         ivPfp = view.findViewById(R.id.ivProfilePfp);
         tvUsername = view.findViewById(R.id.tvprofileUsername);
         ivAddPfp = view.findViewById(R.id.ivAddPfp);
-        ivAddPfp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchCamera();
-                ParseUser user = ParseUser.getCurrentUser();
-                user.put("profileImage", new ParseFile(photoFile));
-                user.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e != null){
-                            Log.e(TAG, "Error saving post: " + e);
-                            Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
+        if (currentUser.getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+            currentUser = ParseUser.getCurrentUser();
+            ivAddPfp.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    launchCamera();
+                    currentUser.put("profileImage", new ParseFile(photoFile));
+                    currentUser.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e != null){
+                                Log.e(TAG, "Error saving post: " + e);
+                                Toast.makeText(getContext(), "Error while saving", Toast.LENGTH_SHORT).show();
+                            }
+                            else{
+                                Log.i(TAG, "Post save was successful!");
+                                RequestOptions requestOptions = new RequestOptions();
+                                requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(100));
+                                Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(currentUser.getParseFile("profileImage").getUrl()).into(ivPfp);
+                            }
                         }
-                        else{
-                            Log.i(TAG, "Post save was successful!");
-                            RequestOptions requestOptions = new RequestOptions();
-                            requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(100));
-                            Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(user.getParseFile("profileImage").getUrl()).into(ivPfp);
-                        }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
+        else{
+            ivAddPfp.setVisibility(View.GONE);
+        }
 
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(90));
-        ParseFile pfp_url = ParseUser.getCurrentUser().getParseFile("profileImage");
+        ParseFile pfp_url = currentUser.getParseFile("profileImage");
         if (pfp_url != null){
             Glide.with(getContext()).applyDefaultRequestOptions(requestOptions).load(pfp_url.getUrl()).into(ivPfp);
         }
@@ -102,7 +108,7 @@ public class ProfileFragment extends Fragment {
             Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getActivity().getPackageName())).into(ivPfp);
         }
 
-        tvUsername.setText(ParseUser.getCurrentUser().getUsername());
+        tvUsername.setText(currentUser.getUsername());
 
         allPosts = new ArrayList<Post>();
 
@@ -118,7 +124,7 @@ public class ProfileFragment extends Fragment {
     private void queryUserPosts() {
         // specify what type of data we want to query - Post.class
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        query.whereEqualTo("user", ParseUser.getCurrentUser());
+        query.whereEqualTo("user", currentUser);
         // include data referred by user key
         query.include(Post.USER_KEY);
         // order posts by creation date (newest first)
@@ -150,7 +156,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
+        currentUser = this.getArguments().getParcelable("user");
 
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }

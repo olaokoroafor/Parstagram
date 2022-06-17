@@ -1,6 +1,9 @@
 package com.example.parstagram;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -12,6 +15,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.parstagram.models.Post;
 import com.parse.ParseFile;
+import com.parse.ParseUser;
+
+import java.util.List;
 
 public class PostDetailActivity extends AppCompatActivity {
     private TextView tvUsername;
@@ -23,7 +29,9 @@ public class PostDetailActivity extends AppCompatActivity {
     private ImageView ivPostPic;
     private ImageView ivLike;
     private ImageView ivComment;
+    private TextView tvComments;
     private Post post;
+    private boolean liked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +50,20 @@ public class PostDetailActivity extends AppCompatActivity {
         ivPostPic = findViewById(R.id.ivDetailPostPic);
         ivLike = findViewById(R.id.ivDetailLike);
         ivComment = findViewById(R.id.ivDetailComment);
+        tvComments = findViewById(R.id.tvComments);
+        tvComments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PostDetailActivity.this, CommentsActivity.class);
+                intent.putExtra(Post.class.getSimpleName(), post);
+                startActivity(intent);
+            }
+        });
 
         //bind data to view elements
         tvCaption.setText(post.getDescription());
         tvUsername.setText(post.getUser().getUsername());
         tvCaptionUsername.setText(post.getUser().getUsername());
-        tvLikeCount.setText((new Integer(0).toString()) + " likes");
         tvPostedAt.setText(Post.getRelativeTimeAgo(post.getCreatedAt().toString()));
         RequestOptions requestOptions = new RequestOptions();
         requestOptions = requestOptions.transforms(new CenterCrop());
@@ -60,6 +76,63 @@ public class PostDetailActivity extends AppCompatActivity {
         else{
             Glide.with(this).applyDefaultRequestOptions(requestOptions).load(getResources().getIdentifier("ic_baseline_face_24", "drawable", getPackageName())).into(ivProfilePic);
         }
+        ivComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PostDetailActivity.this, CommentsActivity.class);
+                intent.putExtra(Post.class.getSimpleName(), post);
+                startActivity(intent);
+                Log.i("Timeline Adapter", post.getObjectId());
+            }
+        });
+
+        List<String> likeArray = post.getLikes();
+        Integer likes;
+        if (likeArray != null){
+            likes = likeArray.size();
+        }
+        else{
+            likes = 0;
+        }
+        tvLikeCount.setText( likes + " likes");
+
+        if (likeArray.contains(ParseUser.getCurrentUser().getObjectId())){
+            liked = true;
+            Glide.with(this)
+                    .load(R.drawable.ufi_heart_active)
+                        .into(ivLike);
+        }
+        else{
+            liked = false;
+            Glide.with(this)
+                    .load(R.drawable.ufi_heart)
+                    .into(ivLike);
+        }
+
+        ivLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!liked){
+                    post.setLikes(ParseUser.getCurrentUser(), true);
+                    post.saveInBackground();
+                    tvLikeCount.setText(new Integer(likes+1).toString() + " likes");
+                    liked = true;
+                    Glide.with(PostDetailActivity.this)
+                            .load(R.drawable.ufi_heart_active)
+                            .into(ivLike);
+                }
+
+                else{
+                    post.setLikes(ParseUser.getCurrentUser(), false);
+                    post.saveInBackground();
+                    tvLikeCount.setText(new Integer(likes-1).toString() + " likes");
+                    liked = false;
+                    Glide.with(PostDetailActivity.this)
+                            .load(R.drawable.ufi_heart)
+                            .into(ivLike);
+                }
+            }
+        });
 
     }
 }

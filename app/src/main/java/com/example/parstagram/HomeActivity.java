@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.parstagram.fragments.ComposeFragment;
 import com.example.parstagram.fragments.ProfileFragment;
@@ -73,12 +74,25 @@ public class HomeActivity extends AppCompatActivity {
                     //showComposeFragment("");
                     Log.i(TAG, "profile selected");
                     fragment = profileFragment;
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("user", ParseUser.getCurrentUser());
+                    fragment.setArguments(bundle);
                 }
-                fragmentManager.beginTransaction().replace(R.id.tvPlaceholder, fragment).commit();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.tvPlaceholder, fragment);
+                transaction.addToBackStack(null).commit();
                 return true;
             }
         });
         bottomNavigationView.setSelectedItemId(R.id.menu_timeline);
     }
 
+    public void displayProfileFragment(ParseUser user) {
+        Fragment new_fragment = new ProfileFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
+        new_fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().replace(R.id.tvPlaceholder, new_fragment).addToBackStack(null).commit();
+    }
 }
