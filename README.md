@@ -46,7 +46,7 @@ Please list two areas of the assignment you'd like to **discuss further with you
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+![insta_1](https://user-images.githubusercontent.com/51707797/174413750-0a8ff0d3-3a7b-4b34-aab4-692fae9c58d9.gif)
 
 
 ## Credits
