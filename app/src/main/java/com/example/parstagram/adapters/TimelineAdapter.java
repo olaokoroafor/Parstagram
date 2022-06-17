@@ -2,6 +2,7 @@ package com.example.parstagram.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +16,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.parstagram.CommentsActivity;
+import com.example.parstagram.HomeActivity;
 import com.example.parstagram.PostDetailActivity;
 import com.example.parstagram.R;
 import com.example.parstagram.models.Post;
 import com.parse.ParseFile;
-
-import org.json.JSONArray;
+import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -65,7 +67,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
         private ImageView ivPostPic;
         private ImageView ivLike;
         private ImageView ivComment;
-        private boolean liked = false;
+        private TextView tvComments;
+        private boolean liked;
 
         public ViewHolder(@NonNull View itemView){
             super(itemView);
@@ -78,6 +81,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
             ivPostPic = itemView.findViewById(R.id.ivTimelinePostPic);
             ivLike = itemView.findViewById(R.id.ivTimelineLike);
             ivComment = itemView.findViewById(R.id.ivTimelineComment);
+            tvComments = itemView.findViewById(R.id.tvComments);
         }
 
         public void bind(Post post) {
@@ -85,15 +89,17 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
             tvCaption.setText(post.getDescription());
             tvUsername.setText(post.getUser().getUsername());
             tvCaptionUsername.setText(post.getUser().getUsername());
-            JSONArray likeArray = post.getLikes();
-            Integer likes;
-            if (likeArray != null){
-                likes = likeArray.length();
-            }
-            else{
-                likes = 0;
-            }
-            tvLikeCount.setText( likes + " likes");
+            tvComments.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, CommentsActivity.class);
+                    intent.putExtra(Post.class.getSimpleName(), post);
+                    context.startActivity(intent);
+                    Log.i("Timeline Adapter", post.getObjectId());
+                }
+            });
+
+
             tvPostedAt.setText(Post.getRelativeTimeAgo(post.getCreatedAt().toString()));
             RequestOptions requestOptions = new RequestOptions();
             requestOptions = requestOptions.transforms(new CenterCrop());
@@ -114,6 +120,72 @@ public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHo
             else{
                 Glide.with(context).applyDefaultRequestOptions(requestOptions).load(context.getResources().getIdentifier("ic_baseline_face_24", "drawable", context.getPackageName())).into(ivProfilePic);
             }
+            ivComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, CommentsActivity.class);
+                    intent.putExtra(Post.class.getSimpleName(), post);
+                    context.startActivity(intent);
+                    Log.i("Timeline Adapter", post.getObjectId());
+                }
+            });
+            View.OnClickListener to_profile = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((HomeActivity) context).displayProfileFragment(post.getUser());
+                }
+            };
+            ivProfilePic.setOnClickListener(to_profile);
+            tvUsername.setOnClickListener(to_profile);
+            tvCaptionUsername.setOnClickListener(to_profile);
+
+            List<String> likeArray = post.getLikes();
+            Integer likes;
+            if (likeArray != null){
+                likes = likeArray.size();
+            }
+            else{
+                likes = 0;
+            }
+            tvLikeCount.setText( likes + " likes");
+
+            if (likeArray.contains(ParseUser.getCurrentUser().getObjectId())){
+                liked = true;
+                Glide.with(context)
+                        .load(R.drawable.ufi_heart_active)
+                        .into(ivLike);
+            }
+            else{
+                liked = false;
+                Glide.with(context)
+                        .load(R.drawable.ufi_heart)
+                        .into(ivLike);
+            }
+
+            ivLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!liked){
+                        post.setLikes(ParseUser.getCurrentUser(), true);
+                        post.saveInBackground();
+                        tvLikeCount.setText(new Integer(likes+1).toString() + " likes");
+                        liked = true;
+                        Glide.with(context)
+                                .load(R.drawable.ufi_heart_active)
+                                .into(ivLike);
+                    }
+
+                    else{
+                        post.setLikes(ParseUser.getCurrentUser(), false);
+                        post.saveInBackground();
+                        tvLikeCount.setText(new Integer(likes-1).toString() + " likes");
+                        liked = false;
+                        Glide.with(context)
+                                .load(R.drawable.ufi_heart)
+                                .into(ivLike);
+                    }
+                }
+            });
 
 
         }
