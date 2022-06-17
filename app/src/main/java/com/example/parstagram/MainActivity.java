@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.parse.ParseUser;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -18,8 +20,14 @@ public class MainActivity extends AppCompatActivity {
                     sleep(2*1000);
 
                     // After 5 seconds redirect to another intent
-                    Intent i=new Intent(getBaseContext(), LoginActivity.class);
-                    startActivity(i);
+                    if (ParseUser.getCurrentUser() != null){
+                        Intent i = new Intent(MainActivity.this, HomeActivity.class);
+                        startActivity(i);
+                    }
+                    else{
+                        Intent i=new Intent(getBaseContext(), LoginActivity.class);
+                        startActivity(i);
+                    }
 
                     //Remove activity
                     finish();
